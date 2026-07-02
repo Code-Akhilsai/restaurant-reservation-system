@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "../db/connectDB.js";
+import Register_router from "../routes/register.routes.js";
 
 dotenv.config();
 
@@ -12,6 +13,9 @@ app.use(express.json());
 app.use(cors());
 
 await connectDB();
+
+//routes
+app.use("/api/auth", Register_router);
 app.listen(port, () =>
   console.log(`Server is running on http://localhost:${port}`),
 );

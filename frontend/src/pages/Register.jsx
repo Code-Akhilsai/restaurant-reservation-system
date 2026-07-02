@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -32,19 +34,23 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/register`,
+        {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
-      if (!response.ok) {
+      if (response.status !== 200) {
         throw new Error("Registration failed");
       }
 
-      console.log("Registration successful");
+      console.log("Registration successful:", response.data);
+
+      window.dispatchEvent(new Event("authchange"));
+      navigate("/");
     } catch (err) {
       setError(err.message || "An error occurred");
     } finally {
