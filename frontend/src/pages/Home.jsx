@@ -1,6 +1,26 @@
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const nav = useNavigate();
+  const handle_bookingnav = async () => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/bookings`,
+        null,
+        { withCredentials: true },
+      );
+
+      if (res.status != 200) return console.log(`${res.status} unauthroized`);
+
+      nav("/book-table");
+
+      console.log(`${res.data}Authorized`);
+    } catch (error) {
+      return console.log(error);
+    }
+  };
   return (
     <main>
       <section className="bg-linear-to-br from-slate-950 via-slate-900 to-orange-950 px-5 py-24 text-white">
@@ -19,6 +39,7 @@ function Home() {
           </p>
 
           <Link
+            onClick={handle_bookingnav}
             to="/book-table"
             className="mt-8 inline-block rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white transition hover:bg-orange-600"
           >

@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "../db/connectDB.js";
 import Register_router from "../routes/register.routes.js";
 import Login_router from "../routes/login.routes.js";
+import Booking_router from "../routes/booking.routes.js";
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ await connectDB();
 //routes
 app.use("/api/auth", Register_router);
 app.use("/api/auth", Login_router);
+app.use("/api/auth", Booking_router);
 
 app.listen(port, () =>
   console.log(`Server is running on http://localhost:${port}`),
