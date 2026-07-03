@@ -1,16 +1,29 @@
 import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const nav = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Replace with real submit logic
-    console.log("Login submit", { email, password });
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
+        { email, password },
+      );
+
+      if (res.status != 200) return console.log("Login failed");
+      console.log(`login successfull ${res.status}`);
+      nav("/");
+    } catch (error) {
+      return console.log(error);
+    }
   };
 
   return (
