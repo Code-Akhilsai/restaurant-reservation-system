@@ -29,4 +29,4 @@ const seedTables = async () => {
   }
 };
 
-seedTables();
+//seedTables();
