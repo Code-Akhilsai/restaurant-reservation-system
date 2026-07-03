@@ -42,7 +42,7 @@ function Navbar() {
           {isRegisteredUser ? (
             <>
               <NavLink to="/my-reservations" className={navClass}>
-                My Reservations
+                My Bookings
               </NavLink>
               <button
                 type="button"
