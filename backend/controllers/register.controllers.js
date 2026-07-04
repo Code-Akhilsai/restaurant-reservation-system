@@ -13,7 +13,7 @@ const registerController = async (req, res) => {
 
     const hashpassword = await bcrypt.hash(password, 10);
 
-    const response = await User.create({
+    await User.create({
       username,
       email,
       password: hashpassword,
