@@ -4,9 +4,18 @@ import axios from "axios";
 
 function AdminDashboard() {
   const navigate = useNavigate();
+
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  const [editingBooking, setEditingBooking] = useState(null);
+  const [editForm, setEditForm] = useState({
+    reservationDate: "",
+    timeSlot: "",
+    members: 1,
+    notes: "",
+  });
 
   useEffect(() => {
     const savedUser = localStorage.getItem("registeredUser");
@@ -71,6 +80,51 @@ function AdminDashboard() {
     } catch (error) {
       console.error("Admin cancel error:", error);
       alert(error.response?.data?.message || "Failed to cancel reservation");
+    }
+  };
+
+  const openEditModal = (booking) => {
+    setEditingBooking(booking);
+
+    setEditForm({
+      reservationDate: booking.reservationDate,
+      timeSlot: booking.timeSlot,
+      members: booking.members,
+      notes: booking.notes || "",
+    });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+
+    setEditForm((previousForm) => ({
+      ...previousForm,
+      [name]: name === "members" ? Number(value) : value,
+    }));
+  };
+
+  const handleUpdateBooking = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/auth/admin/bookings/${editingBooking._id}`,
+        editForm,
+        {
+          withCredentials: true,
+        },
+      );
+
+      setReservations((previousBookings) =>
+        previousBookings.map((booking) =>
+          booking._id === editingBooking._id ? res.data.booking : booking,
+        ),
+      );
+
+      setEditingBooking(null);
+    } catch (error) {
+      console.error("Admin update error:", error);
+      alert(error.response?.data?.message || "Failed to update reservation");
     }
   };
 
@@ -224,12 +278,21 @@ function AdminDashboard() {
 
                         <td className="px-6 py-4">
                           {booking.status === "confirmed" ? (
-                            <button
-                              onClick={() => handleAdminCancel(booking._id)}
-                              className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
-                            >
-                              Cancel
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => openEditModal(booking)}
+                                className="rounded-md bg-orange-50 px-3 py-1.5 text-xs font-semibold text-orange-600 hover:bg-orange-100"
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                onClick={() => handleAdminCancel(booking._id)}
+                                className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           ) : (
                             <span className="text-xs text-slate-400">
                               No action
@@ -244,6 +307,100 @@ function AdminDashboard() {
             </section>
           )}
         </>
+      )}
+
+      {editingBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
+          <form
+            onSubmit={handleUpdateBooking}
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-slate-900">
+                Update Reservation
+              </h2>
+
+              <button
+                type="button"
+                onClick={() => setEditingBooking(null)}
+                className="text-sm font-medium text-slate-500 hover:text-slate-900"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="grid gap-4">
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                Date
+                <input
+                  required
+                  type="date"
+                  name="reservationDate"
+                  value={editForm.reservationDate}
+                  onChange={handleEditChange}
+                  className="rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-orange-400"
+                />
+              </label>
+
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                Time
+                <input
+                  required
+                  type="time"
+                  name="timeSlot"
+                  value={editForm.timeSlot}
+                  onChange={handleEditChange}
+                  className="rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-orange-400"
+                />
+              </label>
+
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                Members
+                <select
+                  name="members"
+                  value={editForm.members}
+                  onChange={handleEditChange}
+                  className="rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-orange-400"
+                >
+                  {[1, 2, 3, 4].map((number) => (
+                    <option key={number} value={number}>
+                      {number} {number === 1 ? "person" : "people"}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                Notes
+                <textarea
+                  name="notes"
+                  value={editForm.notes}
+                  onChange={handleEditChange}
+                  rows={3}
+                  maxLength={300}
+                  className="resize-none rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-orange-400"
+                />
+              </label>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setEditingBooking(null)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+              >
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </div>
       )}
     </main>
   );
