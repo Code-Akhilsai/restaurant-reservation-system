@@ -7,6 +7,7 @@ function AdminDashboard() {
   const navigate = useNavigate();
 
   const [reservations, setReservations] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
@@ -127,13 +128,17 @@ function AdminDashboard() {
     getAllBookings();
   }, []);
 
+  const filteredReservations = selectedDate
+    ? reservations.filter((booking) => booking.reservationDate === selectedDate)
+    : reservations;
+
   const totalReservations = reservations.length;
 
-  const confirmedReservations = reservations.filter(
+  const confirmedReservations = filteredReservations.filter(
     (booking) => booking.status === "confirmed",
   ).length;
 
-  const cancelledReservations = reservations.filter(
+  const cancelledReservations = filteredReservations.filter(
     (booking) => booking.status === "cancelled",
   ).length;
 
@@ -189,7 +194,9 @@ function AdminDashboard() {
           <section className="mb-8 grid gap-5 md:grid-cols-3">
             <div className="rounded-2xl bg-slate-900 p-6 text-white">
               <p className="text-sm text-slate-300">Total Reservations</p>
-              <p className="mt-2 text-4xl font-bold">{totalReservations}</p>
+              <p className="mt-2 text-4xl font-bold">
+                {selectedDate ? filteredReservations.length : totalReservations}
+              </p>
             </div>
 
             <div className="rounded-2xl bg-emerald-600 p-6 text-white">
@@ -203,14 +210,40 @@ function AdminDashboard() {
             </div>
           </section>
 
-          {reservations.length === 0 ? (
+          <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <label className="grid gap-2 text-sm font-medium text-slate-700">
+                Filter by date
+                <input
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-orange-400"
+                />
+              </label>
+
+              {selectedDate && (
+                <button
+                  type="button"
+                  onClick={() => setSelectedDate("")}
+                  className="w-fit rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Clear filter
+                </button>
+              )}
+            </div>
+          </section>
+
+          {filteredReservations.length === 0 ? (
             <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center">
               <h2 className="text-lg font-semibold text-slate-900">
                 No reservations found
               </h2>
 
               <p className="mt-2 text-sm text-slate-500">
-                Customer bookings will appear here.
+                {selectedDate
+                  ? "No reservations match the selected date."
+                  : "Customer bookings will appear here."}
               </p>
             </div>
           ) : (
@@ -237,7 +270,7 @@ function AdminDashboard() {
                   </thead>
 
                   <tbody className="divide-y divide-slate-200">
-                    {reservations.map((booking) => (
+                    {filteredReservations.map((booking) => (
                       <tr key={booking._id} className="hover:bg-slate-50">
                         <td className="px-6 py-4 font-medium text-slate-900">
                           {booking.customer?.username || "-"}
