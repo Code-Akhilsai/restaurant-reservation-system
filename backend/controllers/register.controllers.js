@@ -5,7 +5,9 @@ const registerController = async (req, res) => {
   const { username, email, password } = req.body;
 
   try {
-    const user = await User.findOne({ username, email });
+    const user = await User.findOne({
+      $or: [{ username }, { email }],
+    });
 
     if (user) {
       return res.status(409).json({ message: "User already exists" });
@@ -21,6 +23,10 @@ const registerController = async (req, res) => {
 
     return res.status(201).json({ message: "Registration is successfull" });
   } catch (error) {
+    if (error?.code === 11000) {
+      return res.status(409).json({ message: "User already exists" });
+    }
+
     console.error("Error occurred during registration:", error);
     return res.status(500).json({ message: "Registration failed" });
   }

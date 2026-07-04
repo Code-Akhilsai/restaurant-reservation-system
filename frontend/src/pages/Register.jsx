@@ -43,7 +43,7 @@ const Register = () => {
         },
       );
 
-      if (response.status !== 200) {
+      if (response.status !== 201) {
         throw new Error("Registration failed");
       }
 
@@ -52,6 +52,7 @@ const Register = () => {
         JSON.stringify({
           username: formData.username,
           email: formData.email,
+          role: "customer",
           isLoggedIn: true,
         }),
       );
