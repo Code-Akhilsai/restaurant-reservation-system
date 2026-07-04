@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 const BookTable = () => {
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ const BookTable = () => {
       setLoading(true);
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/bookings`,
+        `${API_URL}/api/auth/bookings`,
         {
           reservationDate,
           timeSlot,

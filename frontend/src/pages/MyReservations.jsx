@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 function MyReservations() {
   const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
@@ -28,12 +29,9 @@ function MyReservations() {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/myreservations`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await axios.get(`${API_URL}/api/auth/myreservations`, {
+        withCredentials: true,
+      });
 
       setReservations(res.data.bookings || []);
     } catch (error) {
@@ -56,7 +54,7 @@ function MyReservations() {
 
     try {
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/bookings/${bookingId}/cancel`,
+        `${API_URL}/api/auth/bookings/${bookingId}/cancel`,
         {},
         {
           withCredentials: true,

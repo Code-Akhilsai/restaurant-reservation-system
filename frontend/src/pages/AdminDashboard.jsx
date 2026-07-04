@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -37,12 +37,9 @@ function AdminDashboard() {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/admin/bookings`,
-        {
-          withCredentials: true,
-        },
-      );
+      const res = await axios.get(`${API_URL}/api/auth/admin/bookings`, {
+        withCredentials: true,
+      });
 
       setReservations(res.data.bookings || []);
     } catch (error) {
@@ -63,7 +60,7 @@ function AdminDashboard() {
 
     try {
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/admin/bookings/${bookingId}/cancel`,
+        `${API_URL}/api/auth/admin/bookings/${bookingId}/cancel`,
         {},
         {
           withCredentials: true,
@@ -108,7 +105,7 @@ function AdminDashboard() {
 
     try {
       const res = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/admin/bookings/${editingBooking._id}`,
+        `${API_URL}/api/auth/admin/bookings/${editingBooking._id}`,
         editForm,
         {
           withCredentials: true,
