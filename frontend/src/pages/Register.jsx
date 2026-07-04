@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { clearAuthStorage } from "../utils/auth";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
@@ -46,12 +47,14 @@ const Register = () => {
         throw new Error("Registration failed");
       }
 
+      clearAuthStorage();
+      localStorage.setItem("authToken", response.data.token);
       localStorage.setItem(
         "registeredUser",
         JSON.stringify({
-          username: formData.username,
-          email: formData.email,
-          role: "customer",
+          username: response.data.user.username,
+          email: response.data.user.email,
+          role: response.data.user.role,
           isLoggedIn: true,
         }),
       );

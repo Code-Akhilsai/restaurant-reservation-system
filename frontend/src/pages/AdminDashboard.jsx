@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { clearAuthStorage, getAuthConfig } from "../utils/auth";
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ function AdminDashboard() {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("registeredUser");
+    clearAuthStorage();
     window.dispatchEvent(new Event("authchange"));
     navigate("/", { replace: true });
   };
@@ -37,9 +38,10 @@ function AdminDashboard() {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.get(`${API_URL}/api/auth/admin/bookings`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${API_URL}/api/auth/admin/bookings`,
+        getAuthConfig(),
+      );
 
       setReservations(res.data.bookings || []);
     } catch (error) {
@@ -62,9 +64,7 @@ function AdminDashboard() {
       const res = await axios.patch(
         `${API_URL}/api/auth/admin/bookings/${bookingId}/cancel`,
         {},
-        {
-          withCredentials: true,
-        },
+        getAuthConfig(),
       );
 
       setReservations((previousBookings) =>
@@ -107,9 +107,7 @@ function AdminDashboard() {
       const res = await axios.patch(
         `${API_URL}/api/auth/admin/bookings/${editingBooking._id}`,
         editForm,
-        {
-          withCredentials: true,
-        },
+        getAuthConfig(),
       );
 
       setReservations((previousBookings) =>

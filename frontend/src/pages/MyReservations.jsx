@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { clearAuthStorage, getAuthConfig } from "../utils/auth";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 function MyReservations() {
@@ -19,7 +20,7 @@ function MyReservations() {
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("registeredUser");
+    clearAuthStorage();
     window.dispatchEvent(new Event("authchange"));
     navigate("/", { replace: true });
   };
@@ -29,9 +30,10 @@ function MyReservations() {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.get(`${API_URL}/api/auth/myreservations`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `${API_URL}/api/auth/myreservations`,
+        getAuthConfig(),
+      );
 
       setReservations(res.data.bookings || []);
     } catch (error) {
@@ -56,9 +58,7 @@ function MyReservations() {
       const res = await axios.patch(
         `${API_URL}/api/auth/bookings/${bookingId}/cancel`,
         {},
-        {
-          withCredentials: true,
-        },
+        getAuthConfig(),
       );
 
       setReservations((previousBookings) =>

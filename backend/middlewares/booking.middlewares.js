@@ -1,8 +1,18 @@
 import jwt from "jsonwebtoken";
 
+const getTokenFromHeader = (req) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return null;
+  }
+
+  return authHeader.split(" ")[1];
+};
+
 const bookingMiddleware = (req, res, next) => {
   try {
-    const token = req.cookies?.token;
+    const token = getTokenFromHeader(req);
 
     if (!token) {
       return res.status(401).json({

@@ -29,22 +29,15 @@ const loginController = async (req, res) => {
       },
     );
 
-    return res
-      .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
-      })
-      .json({
-        message: "Login successfull",
-        user: {
-          _id: user._id,
-          email: user.email,
-          role: user.role,
-        },
-      });
+    return res.status(200).json({
+      message: "Login successfull",
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: "Login failed" });
   }

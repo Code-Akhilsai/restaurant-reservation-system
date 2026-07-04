@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { clearAuthStorage } from "../utils/auth";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 export default function Login() {
@@ -14,15 +15,16 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await axios.post(
-        `${API_URL}/api/auth/login`,
-        { email, password },
-        { withCredentials: true },
-      );
+      const res = await axios.post(`${API_URL}/api/auth/login`, {
+        email,
+        password,
+      });
 
       if (res.status != 200) return console.log("Login failed");
       console.log(`login successfull ${res.status}`);
 
+      clearAuthStorage();
+      localStorage.setItem("authToken", res.data.token);
       localStorage.setItem(
         "registeredUser",
         JSON.stringify({

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import { clearAuthStorage } from "../utils/auth";
 
 function Home() {
   const nav = useNavigate();
@@ -27,7 +28,7 @@ function Home() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("registeredUser");
+    clearAuthStorage();
     setUser(null);
 
     window.dispatchEvent(new Event("authchange"));
