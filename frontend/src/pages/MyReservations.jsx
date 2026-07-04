@@ -9,6 +9,7 @@ function MyReservations() {
   const getBookings = async () => {
     try {
       setLoading(true);
+      setMessage("");
 
       const res = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/myreservations`,
@@ -20,6 +21,7 @@ function MyReservations() {
       setReservations(res.data.bookings || []);
     } catch (error) {
       console.error("Get bookings error:", error);
+
       setMessage(
         error.response?.data?.message || "Failed to load reservations",
       );
@@ -29,8 +31,14 @@ function MyReservations() {
   };
 
   const handleCancel = async (bookingId) => {
+    const shouldCancel = window.confirm(
+      "Are you sure you want to cancel this reservation?",
+    );
+
+    if (!shouldCancel) return;
+
     try {
-      await axios.patch(
+      const res = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/bookings/${bookingId}/cancel`,
         {},
         {
@@ -41,11 +49,12 @@ function MyReservations() {
       setReservations((previousBookings) =>
         previousBookings.map((booking) =>
           booking._id === bookingId
-            ? { ...booking, status: "cancelled" }
+            ? { ...booking, status: res.data.booking.status }
             : booking,
         ),
       );
     } catch (error) {
+      console.error("Cancel booking error:", error);
       alert(error.response?.data?.message || "Failed to cancel reservation");
     }
   };
@@ -56,30 +65,45 @@ function MyReservations() {
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-12">
-      {" "}
       <div className="mb-8">
-        {" "}
         <p className="text-sm font-semibold uppercase tracking-wider text-orange-600">
-          Customer dashboard{" "}
+          Customer Dashboard
         </p>
-        <h1 className="mt-2 text-3xl font-bold">My Reservations</h1>
+
+        <h1 className="mt-2 text-3xl font-bold text-slate-900">
+          My Reservations
+        </h1>
+
         <p className="mt-2 text-slate-600">
           View or cancel your upcoming restaurant reservations.
         </p>
       </div>
-      {loading && <p className="text-slate-600">Loading reservations...</p>}
-      {!loading && message && (
-        <p className="rounded-lg bg-red-50 p-4 text-red-600">{message}</p>
+
+      {loading && (
+        <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-600">
+          Loading reservations...
+        </div>
       )}
+
+      {!loading && message && (
+        <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-red-600">
+          {message}
+        </div>
+      )}
+
       {!loading && !message && reservations.length === 0 && (
         <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center">
-          <h2 className="text-lg font-semibold">No reservations yet</h2>
+          <h2 className="text-lg font-semibold text-slate-900">
+            No reservations yet
+          </h2>
+
           <p className="mt-2 text-sm text-slate-500">
-            Your table reservations will appear here.
+            Your table reservations will appear here after you book a table.
           </p>
         </div>
       )}
-      {!loading && reservations.length > 0 && (
+
+      {!loading && !message && reservations.length > 0 && (
         <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
           <table className="min-w-full text-left text-sm">
             <thead className="bg-slate-50 text-slate-600">
@@ -96,35 +120,51 @@ function MyReservations() {
 
             <tbody className="divide-y divide-slate-200">
               {reservations.map((booking) => (
-                <tr key={booking._id}>
-                  <td className="px-4 py-3 font-medium">
+                <tr key={booking._id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3 font-medium text-slate-900">
                     {booking.table?.table_number
                       ? `Table ${booking.table.table_number}`
                       : "Table not assigned"}
                   </td>
 
-                  <td className="px-4 py-3">{booking.reservationDate}</td>
+                  <td className="px-4 py-3 text-slate-700">
+                    {booking.reservationDate}
+                  </td>
 
-                  <td className="px-4 py-3">{booking.timeSlot}</td>
+                  <td className="px-4 py-3 text-slate-700">
+                    {booking.timeSlot}
+                  </td>
 
-                  <td className="px-4 py-3">{booking.members}</td>
+                  <td className="px-4 py-3 text-slate-700">
+                    {booking.members}
+                  </td>
 
-                  <td className="max-w-48 truncate px-4 py-3">
+                  <td className="max-w-48 truncate px-4 py-3 text-slate-700">
                     {booking.notes || "-"}
                   </td>
 
-                  <td className="px-4 py-3 capitalize">{booking.status}</td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                        booking.status === "confirmed"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {booking.status}
+                    </span>
+                  </td>
 
                   <td className="px-4 py-3">
                     {booking.status === "confirmed" ? (
                       <button
                         onClick={() => handleCancel(booking._id)}
-                        className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-100"
+                        className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-100"
                       >
                         Cancel
                       </button>
                     ) : (
-                      "-"
+                      <span className="text-xs text-slate-400">No action</span>
                     )}
                   </td>
                 </tr>
