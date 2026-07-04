@@ -5,14 +5,22 @@ import connectDB from "../db/connectDB.js";
 import Register_router from "../routes/register.routes.js";
 import Login_router from "../routes/login.routes.js";
 import Booking_router from "../routes/booking.routes.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
 const port = process.env.PORT;
 const app = express();
+const clientOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: clientOrigin,
+    credentials: true,
+  }),
+);
+app.use(cookieParser());
 
 await connectDB();
 

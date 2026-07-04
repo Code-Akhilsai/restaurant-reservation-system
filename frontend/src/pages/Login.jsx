@@ -16,10 +16,17 @@ export default function Login() {
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`,
         { email, password },
+        { withCredentials: true },
       );
 
       if (res.status != 200) return console.log("Login failed");
       console.log(`login successfull ${res.status}`);
+
+      localStorage.setItem(
+        "registeredUser",
+        JSON.stringify({ email, isLoggedIn: true }),
+      );
+      window.dispatchEvent(new Event("authchange"));
       nav("/");
     } catch (error) {
       return console.log(error);

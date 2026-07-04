@@ -49,6 +49,15 @@ const Register = () => {
 
       console.log("Registration successful:", response.data);
 
+      localStorage.setItem(
+        "registeredUser",
+        JSON.stringify({
+          username: formData.username,
+          email: formData.email,
+          isLoggedIn: true,
+        }),
+      );
+
       window.dispatchEvent(new Event("authchange"));
       navigate("/");
     } catch (err) {

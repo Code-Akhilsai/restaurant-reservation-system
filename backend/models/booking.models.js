@@ -26,6 +26,12 @@ const bookingSchema = new mongoose.Schema(
       min: 1,
       max: 4,
     },
+
+    notes: {
+      type: String,
+      trim: true,
+      maxlength: 300,
+    },
     status: {
       type: String,
       enum: ["confirmed", "cancelled"],

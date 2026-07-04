@@ -1,25 +1,10 @@
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function Home() {
   const nav = useNavigate();
   const handle_bookingnav = async () => {
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/auth/bookings`,
-        null,
-        { withCredentials: true },
-      );
-
-      if (res.status != 200) return console.log(`${res.status} unauthroized`);
-
-      nav("/book-table");
-
-      console.log(`${res.data}Authorized`);
-    } catch (error) {
-      return console.log(error);
-    }
+    nav("/book-table");
   };
   return (
     <main>

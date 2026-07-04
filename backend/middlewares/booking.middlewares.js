@@ -1,20 +1,26 @@
 import jwt from "jsonwebtoken";
 
-const bookingMiddleware = async (req, res, next) => {
+const bookingMiddleware = (req, res, next) => {
   try {
     const token = req.cookies?.token;
 
-    if (!token) return res.status(401).json({ message: "unauthorized" });
+    if (!token) {
+      return res.status(401).json({
+        message: "Unauthorized. Please login first.",
+      });
+    }
 
-    const decode = await jwt.verify(token, process.env.JWT_SECREATE_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECREATE_KEY);
 
-    req.verified_user = decode;
-    res.status(200).json({ message: "Authorized" });
-    return next();
+    req.verified_user = decoded;
+
+    next();
   } catch (error) {
-    console.log(error);
+    console.log("Token verification error:", error.message);
 
-    return res.status(401).json({ message: "unauthorized" });
+    return res.status(401).json({
+      message: "Unauthorized. Invalid or expired token.",
+    });
   }
 };
 
