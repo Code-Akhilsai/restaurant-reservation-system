@@ -45,7 +45,7 @@ const loginController = async (req, res) => {
         },
       });
   } catch (error) {
-    return res.status(401).json({ message: "Unauthorized" });
+    return res.status(500).json({ message: "Login failed" });
   }
 };
 

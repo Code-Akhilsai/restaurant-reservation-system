@@ -19,12 +19,9 @@ const seedTables = async () => {
 
     await Table.insertMany(tables);
 
-    console.log("9 tables seeded successfully");
-    console.log("Database:", mongoose.connection.name);
-
     await mongoose.connection.close();
   } catch (error) {
-    console.log("Table seeding failed:", error.message);
+    console.error("Table seeding failed:", error.message);
     process.exit(1);
   }
 };

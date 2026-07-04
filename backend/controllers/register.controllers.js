@@ -7,7 +7,9 @@ const registerController = async (req, res) => {
   try {
     const user = await User.findOne({ username, email });
 
-    if (user) return res.send("User already existed");
+    if (user) {
+      return res.status(409).json({ message: "User already exists" });
+    }
 
     const hashpassword = await bcrypt.hash(password, 10);
 
@@ -17,8 +19,7 @@ const registerController = async (req, res) => {
       password: hashpassword,
     });
 
-    console.log("User created successfully:", response);
-    return res.status(200).json({ message: "Registration is successfull" });
+    return res.status(201).json({ message: "Registration is successfull" });
   } catch (error) {
     console.error("Error occurred during registration:", error);
     return res.status(500).json({ message: "Registration failed" });

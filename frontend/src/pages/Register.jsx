@@ -47,8 +47,6 @@ const Register = () => {
         throw new Error("Registration failed");
       }
 
-      console.log("Registration successful:", response.data);
-
       localStorage.setItem(
         "registeredUser",
         JSON.stringify({

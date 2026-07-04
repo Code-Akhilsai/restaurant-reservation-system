@@ -16,7 +16,7 @@ const bookingMiddleware = (req, res, next) => {
 
     next();
   } catch (error) {
-    console.log("Token verification error:", error.message);
+    console.error("Token verification error:", error.message);
 
     return res.status(401).json({
       message: "Unauthorized. Invalid or expired token.",
