@@ -1,5 +1,4 @@
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import BookTable from "./pages/BookTable";
 import MyReservations from "./pages/MyReservations";
@@ -10,18 +9,14 @@ import "./App.css";
 
 function App() {
   return (
-    <>
-      <Navbar />
-
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/book-table" element={<BookTable />} />
-        <Route path="/my-reservations" element={<MyReservations />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/book-table" element={<BookTable />} />
+      <Route path="/my-reservations" element={<MyReservations />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+    </Routes>
   );
 }
 

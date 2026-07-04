@@ -1,10 +1,27 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function MyReservations() {
+  const navigate = useNavigate();
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem("registeredUser");
+    const user = savedUser ? JSON.parse(savedUser) : null;
+
+    if (!user || user.role !== "customer") {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("registeredUser");
+    window.dispatchEvent(new Event("authchange"));
+    navigate("/", { replace: true });
+  };
 
   const getBookings = async () => {
     try {
@@ -65,18 +82,37 @@ function MyReservations() {
 
   return (
     <main className="mx-auto max-w-7xl px-5 py-12">
-      <div className="mb-8">
-        <p className="text-sm font-semibold uppercase tracking-wider text-orange-600">
-          Customer Dashboard
-        </p>
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-wider text-orange-600">
+            Customer Dashboard
+          </p>
 
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">
-          My Reservations
-        </h1>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900">
+            My Reservations
+          </h1>
 
-        <p className="mt-2 text-slate-600">
-          View or cancel your upcoming restaurant reservations.
-        </p>
+          <p className="mt-2 text-slate-600">
+            View or cancel your upcoming restaurant reservations.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            to="/"
+            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+          >
+            Home
+          </Link>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       {loading && (

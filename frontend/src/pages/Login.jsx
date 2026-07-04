@@ -24,10 +24,18 @@ export default function Login() {
 
       localStorage.setItem(
         "registeredUser",
-        JSON.stringify({ email, isLoggedIn: true }),
+        JSON.stringify({
+          email,
+          role: res.data.user.role,
+          isLoggedIn: true,
+        }),
       );
       window.dispatchEvent(new Event("authchange"));
-      nav("/");
+      if (res.data.user.role === "admin") {
+        nav("/admin");
+      } else {
+        nav("/");
+      }
     } catch (error) {
       return console.log(error);
     }

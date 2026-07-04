@@ -36,7 +36,14 @@ const loginController = async (req, res) => {
         sameSite: "lax",
         secure: false,
       })
-      .json({ message: "Login successfull" });
+      .json({
+        message: "Login successfull",
+        user: {
+          _id: user._id,
+          email: user.email,
+          role: user.role,
+        },
+      });
   } catch (error) {
     return res.status(401).json({ message: "Unauthorized" });
   }
